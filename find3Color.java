@@ -2,6 +2,11 @@
 // java find3Color graphs2025.txt
 // Natalie Simova, Bennett Beltran, Shane Burke
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.File;
+import java.io.IOException;
+
 public class find3Color {
     public static void main(String[] args) {
         if (args.length == 0)
