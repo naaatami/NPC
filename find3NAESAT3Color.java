@@ -111,25 +111,20 @@ public class find3NAESAT3Color {
 
         // setting all equal values across bars and triangles adjacent to each other
         // (and making a new array first that represents the values of vertices 1 - nVerticeMax
-        int[] nVertexValue = new int[1 + n * 2];
-        for (int i = 0; i < n; i++) {
+        int[] nVertexValue = new int[n * 2];
+        for (int i = 0; i < nVertexValue.length/2; i++) {
             nVertexValue[i * 2] = i + 1;
             nVertexValue[i * 2 + 1] = -(i + 1);
         }
 
-        // THIS IS BROKEN, IT'S PROBABLY AN OFF BY ONE ERROR
-        for(int i = 1; i < nVerticeMax; i++)
+        for(int i = 0; i < cnfArray.length; i++)
         {
-            for(int j = nVerticeMax; j < vertexCount; j++)
+            for(int j = 0; j < nVertexValue.length; j++)
             {
-                int indexInCnfArray = i - 1;
-                int nVertexShift = j - nVerticeMax;
-                System.out.println("Comparing " + cnfArray[indexInCnfArray] + " and " + nVertexValue[nVertexShift]);
-                if(cnfArray[indexInCnfArray] == nVertexValue[nVertexShift])
+                if(cnfArray[i] == nVertexValue[j])
                 {
-                    System.out.println("Setting " + i + " and " + j + " to 1");
-                    adjacencyMatrix[i][j] = 1;
-                    adjacencyMatrix[j][i] = 1;
+                    adjacencyMatrix[nVerticeMax + i][j+1] = 1;
+                    adjacencyMatrix[j+1][nVerticeMax + i] = 1;
                 }
             }
         }
