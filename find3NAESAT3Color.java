@@ -61,7 +61,7 @@ public class find3NAESAT3Color {
         int[] nk = {0, 0};
         for(int currentNum : cnfArray)
         {
-            int value = currentNum;
+            int value = Math.abs(currentNum);
             if(value > nk[0])
             {
                 nk[0] = value;
