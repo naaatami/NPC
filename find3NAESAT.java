@@ -5,6 +5,7 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.File;
+import java.util.Hashtable;
 import java.io.IOException;
 
 public class find3NAESAT {
@@ -35,10 +36,23 @@ public class find3NAESAT {
                 System.out.println("3CNF No." + cnfCount + ": [n=" + numTerms + " k=" + numClauses + "]");
                 System.out.println(line);
 
-                System.out.println("\n");
-                cnfCount++;
+                for (int currentNum : cnfArray) {
+                    System.out.println(currentNum);
+                }
 
-                line = reader.readLine();
+                Hashtable<Integer, Boolean> ht = new Hashtable<>();
+                ht.put(1, true);
+                ht.put(2, true);
+                ht.put(3, true);
+                ht.put(4, true);
+
+                System.out.println(is3SAT(cnfArray, ht));
+
+                return;
+                // System.out.println("\n");
+                // cnfCount++;
+
+                // line = reader.readLine();
             }
 
             reader.close();
@@ -75,9 +89,61 @@ public class find3NAESAT {
         return numbers;
     }
 
-    public static String is3NAESAT(int[] cnfArray, int numTerms, int numClauses) {
+    // Forgot it was supposed to be NAESAT... will make another function later
+    public static boolean is3SAT(int[] cnfArray, Hashtable<Integer, Boolean> assignments) {
+        for (int i = 0; i < cnfArray.length; i++) {
+            // Calculate mod 3, as we are working in groups of 3
+            int r = i % 3;
 
-        return "";
+            // Determine what assignment we are looking at, and find its boolean value
+            int term = Math.abs(cnfArray[i]);
+            boolean value = assignments.get(term);
+
+            // If the term is negative, flip the boolean value
+            if (cnfArray[i] < 0) {
+                value = !value;
+            }
+
+            if (value == true) {
+                // If the value is true we can move to the next group of 3 terms
+                if (r == 0) {
+                    i += 3;
+                    continue;
+                } else if (r == 1) {
+                    i += 2;
+                    continue;
+                }
+            } else if (r == 2 && value == false) {
+                // If we reach the last term in a group of 3 and it is false,
+                // then the whole expression is false.
+                return false;
+            }
+
+        }
+        return true;
+    }
+
+    public static boolean find(int[] cnfArray, Hashtable<Integer, Boolean> assignments, int curTerm, int numTerms) {
+        // Yes i know it needs to be 3NAESAT
+        boolean[] bools = { true, false };
+
+        for (boolean b : bools) {
+            assignments.put(curTerm, b);
+
+            if (curTerm > numTerms) {
+                if (is3SAT(cnfArray, assignments)) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                if (find(cnfArray, assignments, curTerm + 1, numTerms)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
 }
