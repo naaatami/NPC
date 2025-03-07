@@ -36,23 +36,17 @@ public class find3NAESAT {
                 System.out.println("3CNF No." + cnfCount + ": [n=" + numTerms + " k=" + numClauses + "]");
                 System.out.println(line);
 
-                for (int currentNum : cnfArray) {
-                    System.out.println(currentNum);
+                Hashtable<Integer, Boolean> baseAssignments = new Hashtable<>();
+                for (int i = 1; i < numTerms + 1; i++) {
+                    baseAssignments.put(i, true);
                 }
 
-                Hashtable<Integer, Boolean> ht = new Hashtable<>();
-                ht.put(1, true);
-                ht.put(2, true);
-                ht.put(3, true);
-                ht.put(4, true);
+                System.out.println(find3NAESATCertificate(cnfArray, baseAssignments, 1, numTerms));
+                System.out.println(baseAssignments);
+                System.out.println("\n");
+                cnfCount++;
 
-                System.out.println(is3SAT(cnfArray, ht));
-
-                return;
-                // System.out.println("\n");
-                // cnfCount++;
-
-                // line = reader.readLine();
+                line = reader.readLine();
             }
 
             reader.close();
@@ -123,21 +117,63 @@ public class find3NAESAT {
         return true;
     }
 
-    public static boolean find(int[] cnfArray, Hashtable<Integer, Boolean> assignments, int curTerm, int numTerms) {
-        // Yes i know it needs to be 3NAESAT
+    public static boolean is3NAESAT(int[] cnfArray, Hashtable<Integer, Boolean> assignments) {
+        boolean trueFlag = false;
+        boolean NAEFlag = false;
+
+        for (int i = 0; i < cnfArray.length; i++) {
+            // Determine what assignment we are looking at, and find its boolean value
+            int term = Math.abs(cnfArray[i]);
+            boolean value = assignments.get(term);
+
+            // If the term is negative, flip the boolean value
+            if (cnfArray[i] < 0) {
+                value = !value;
+            }
+
+            // Calculate mod 3, as we are working in groups of 3
+            int r = i % 3;
+
+            // If we are in new group, reset flags
+            if (r == 0) {
+                trueFlag = false;
+                NAEFlag = false;
+            }
+
+            // Set flags
+            if (value == true) {
+                trueFlag = true;
+            } else {
+                NAEFlag = true;
+            }
+
+            // If we reach the last term in a group of 3 and one of the flags is false,
+            // then the whole expression is false.
+            if (r == 2 && (trueFlag == false || NAEFlag == false)) {
+                return false;
+            } else if (r == 1 && (trueFlag && NAEFlag)) {
+                // Skip ahead if already NAESAT
+                i += 2;
+            }
+        }
+        return true;
+    }
+
+    public static boolean find3NAESATCertificate(int[] cnfArray, Hashtable<Integer, Boolean> assignments, int curTerm,
+            int numTerms) {
         boolean[] bools = { true, false };
 
         for (boolean b : bools) {
             assignments.put(curTerm, b);
 
             if (curTerm > numTerms) {
-                if (is3SAT(cnfArray, assignments)) {
+                if (is3NAESAT(cnfArray, assignments)) {
                     return true;
                 } else {
                     return false;
                 }
             } else {
-                if (find(cnfArray, assignments, curTerm + 1, numTerms)) {
+                if (find3NAESATCertificate(cnfArray, assignments, curTerm + 1, numTerms)) {
                     return true;
                 }
             }
