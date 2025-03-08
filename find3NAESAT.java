@@ -5,7 +5,11 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Hashtable;
+import java.util.List;
+
 import java.io.IOException;
 
 public class find3NAESAT {
@@ -34,16 +38,36 @@ public class find3NAESAT {
                 int numClauses = numTermsNumClauses[1];
 
                 System.out.println("3CNF No." + cnfCount + ": [n=" + numTerms + " k=" + numClauses + "]");
-                System.out.println(line);
 
                 Hashtable<Integer, Boolean> baseAssignments = new Hashtable<>();
-                for (int i = 1; i < numTerms + 1; i++) {
-                    baseAssignments.put(i, true);
-                }
+                long startTime = System.currentTimeMillis();
+                boolean certFound = find3NAESATCertificate(cnfArray, baseAssignments, 1, numTerms);
+                long endTime = System.currentTimeMillis();
 
-                System.out.println(find3NAESATCertificate(cnfArray, baseAssignments, 1, numTerms));
-                System.out.println(baseAssignments);
-                System.out.println("\n");
+                System.out.print("(" + (endTime - startTime) + " ms) ");
+
+                // Construct cert
+                if (certFound) {
+                    System.out.print("NAE certificate = [");
+                } else {
+                    System.out.print("No NAE positive certificate! Using an random assignment = [");
+                }
+                // Get the keys and sort them
+                List<Integer> sortedKeys = new ArrayList<>(baseAssignments.keySet());
+                Collections.sort(sortedKeys);
+
+                String cert = "";
+                for (int termNum : sortedKeys) {
+                    String a = baseAssignments.get(termNum) ? "T" : "F";
+                    cert += termNum + ":" + a + " ";
+                }
+                System.out.print(cert.substring(0, cert.length() - 1) + "]");
+
+                System.out.println();
+                System.out.println(generate3CNF(cnfArray) + " ==>");
+                System.out.println(generateAssignments(cnfArray, baseAssignments));
+                System.out.println();
+
                 cnfCount++;
 
                 line = reader.readLine();
@@ -83,7 +107,62 @@ public class find3NAESAT {
         return numbers;
     }
 
-    // Forgot it was supposed to be NAESAT... will make another function later
+    public static String generate3CNF(int[] cnfArray) {
+
+        ArrayList<String> results = new ArrayList<String>();
+        for (int i = 0; i < cnfArray.length; i += 3) {
+            String group = "(";
+            if (cnfArray[i] < 0)
+                group += cnfArray[i];
+            else
+                group = group + " " + cnfArray[i];
+            group += "|";
+            if (cnfArray[i + 1] < 0)
+                group += cnfArray[i + 1];
+            else
+                group = group + " " + cnfArray[i + 1];
+            group += "|";
+            if (cnfArray[i + 2] < 0)
+                group += cnfArray[i + 2];
+            else
+                group = group + " " + cnfArray[i + 2];
+            group += ")";
+            results.add(group);
+        }
+        return String.join("/\\", results);
+    }
+
+    public static String generateAssignments(int[] cnfArray, Hashtable<Integer, Boolean> assignments) {
+        ArrayList<String> results = new ArrayList<String>();
+
+        for (int i = 0; i < cnfArray.length; i += 3) {
+            String group = "(";
+            // Determine what assignment we are looking at, and find its boolean value
+            boolean value1 = assignments.get(Math.abs(cnfArray[i]));
+            boolean value2 = assignments.get(Math.abs(cnfArray[i + 1]));
+            boolean value3 = assignments.get(Math.abs(cnfArray[i + 2]));
+
+            // If the term is negative, flip the boolean value
+            if (cnfArray[i] < 0) {
+                value1 = !value1;
+            }
+            if (cnfArray[i + 1] < 0) {
+                value2 = !value2;
+            }
+            if (cnfArray[i + 2] < 0) {
+                value3 = !value3;
+            }
+            String a1 = value1 ? "T" : "F";
+            String a2 = value2 ? "T" : "F";
+            String a3 = value3 ? "T" : "F";
+
+            group += " " + a1 + "| " + a2 + "| " + a3;
+            group += ")";
+            results.add(group);
+        }
+        return String.join("/\\", results);
+    }
+
     public static boolean is3SAT(int[] cnfArray, Hashtable<Integer, Boolean> assignments) {
         for (int i = 0; i < cnfArray.length; i++) {
             // Calculate mod 3, as we are working in groups of 3
@@ -153,7 +232,7 @@ public class find3NAESAT {
                 return false;
             } else if (r == 1 && (trueFlag && NAEFlag)) {
                 // Skip ahead if already NAESAT
-                i += 2;
+                i += 1;
             }
         }
         return true;
@@ -164,8 +243,6 @@ public class find3NAESAT {
         boolean[] bools = { true, false };
 
         for (boolean b : bools) {
-            assignments.put(curTerm, b);
-
             if (curTerm > numTerms) {
                 if (is3NAESAT(cnfArray, assignments)) {
                     return true;
@@ -173,6 +250,7 @@ public class find3NAESAT {
                     return false;
                 }
             } else {
+                assignments.put(curTerm, b);
                 if (find3NAESATCertificate(cnfArray, assignments, curTerm + 1, numTerms)) {
                     return true;
                 }
