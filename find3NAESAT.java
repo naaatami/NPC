@@ -14,13 +14,13 @@ import java.io.IOException;
 
 public class find3NAESAT {
     public static void main(String[] args) {
-        String cnfFile = args[0];
-
         // Ensure that a file name is given
         if (args.length == 0) {
             System.out.println("ERROR: Please provide the text file you'd like to use.");
             return;
         }
+
+        String cnfFile = args[0];
 
         // Start output
         System.out.println("** Find 3NAESAT in " + cnfFile + " (by backtracking):");
