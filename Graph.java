@@ -2,104 +2,124 @@
 import java.util.ArrayList;
 
 class Graph {
-    private enum colors {green,blue,red}
+
     private int vertices, edgeCount;
-    private ArrayList<ArrayList<Integer>> adj;
+    private ArrayList<ArrayList<Integer>> adjacencyList;
     private boolean coloringFound;
-    private ArrayList<colors> colorList = new ArrayList<colors>();
+    private ArrayList<Color> colorList = new ArrayList<Color>();
 
     Graph(int v) {
         vertices = v;
         edgeCount = 0;
-        adj = new ArrayList<ArrayList<Integer>>(vertices);
+        adjacencyList = new ArrayList<ArrayList<Integer>>(vertices);
         coloringFound = false;
         for (int i=0;i<v; i++) {
-            adj.add(new ArrayList<Integer>(vertices));
+            adjacencyList.add(new ArrayList<Integer>(vertices));
             colorList.add(null);
             for (int j=0;j<v;j++) {
-                adj.get(i).add(0);
+                adjacencyList.get(i).add(0);
             }
         }
     }
 
     void addEdge(int v, int w) {
-        adj.get(v).set(w,1);
-        adj.get(w).set(v,1);
+        adjacencyList.get(v).set(w,1);
+        adjacencyList.get(w).set(v,1);
         edgeCount++;
     }
 
     int getEdge(int v, int w) {
-        return adj.get(v).get(w);
+        return adjacencyList.get(v).get(w);
     }
 
 
-    // public ArrayList<colors> getColorList() {
-    //     return colorList;
-    // }
+    public ArrayList<Color> getColorList() {
+        return colorList;
+    }
 
-    void addColor(int v, colors color) {
+    void addColor(int v, Color color) {
         colorList.set(v, color);
     }
 
 
-    boolean isSafe(int k, colors c) {
-        for (int i=0;i<vertices;i++) {
-            if(k != i && getEdge(k, i) == 1 && c==colorList.get(i)) {
+    boolean isSafe(int k, Color color) {
+        for (int i = 0; i < vertices; i++) {
+            if(k != i && getEdge(k, i) == 1 && color == colorList.get(i)) {
                 return false;
             }
         }
         return true;
     }
 
-    public boolean greedyColoring(int v) {
-        
-        for (colors c:colors.values()) {
-            if (isSafe(v,c)) {
-                colorList.set(v, c);
-                if (v+1<vertices) {
-                    greedyColoring(v+1);
-                }
-                else {
-                    coloringFound = true;
+    public boolean threeColorSolve(int vertex) {
+        if(vertex == vertices)
+        {
+            coloringFound = true;
+            return true;
+        }
+
+        for (Color color: Color.values()) {
+            if (isSafe(vertex, color)) {
+                colorList.set(vertex, color);
+
+                if (threeColorSolve(vertex+1))
+                {
                     return true;
-                }  
+                }
+                else
+                {
+                    colorList.set(vertex, null);
+                }
             }
         }
-        
+
         return false;
     }
 
     public String toString() {
-        StringBuilder graph = new StringBuilder();
+        StringBuilder stringGraph = new StringBuilder();
+        stringGraph.append("  ");
+        for(Color color : colorList)
+        {
+            stringGraph.append(color + " ");
+        }
+        stringGraph.append("\n");
+
         for (int i = 0;i<vertices;i++) {
+            stringGraph.append(colorList.get(i) + " ");
             for (int j = 0;j<vertices;j++) {
-                graph.append(adj.get(i).get(j) + " ");
+                if(i == j)
+                    stringGraph.append("X ");
+                else if(adjacencyList.get(i).get(j) == 1)
+                    stringGraph.append("1 ");
+                else
+                    stringGraph.append("  ");
             }
 
-            graph.append("\n");
+            stringGraph.append("\n");
         }
         
-        return graph.toString();
+        return stringGraph.toString();
     }
 
-    public String getColorList()
+    public String getColorString()
     {
         if(coloringFound == false)
         {
-            return "No coloring found!";
+            return "Not 3-colorable ";
         }
 
         String colorString = "";
-        for(colors color : colorList)
+        for(Color color : colorList)
         {
             switch (color) {
-                case green:
+                case G:
                     colorString = colorString + "G";
                     break;
-                case blue:
+                case B:
                     colorString = colorString + "B";
                     break;
-                case red:
+                case R:
                     colorString = colorString + "R";
                     break;
                 default:
@@ -110,27 +130,6 @@ class Graph {
         return colorString;
     }
 
-    // public String[] getColorArray()
-    // {
-    //     String[] colorArray = new String[vertices];
-    //     for(int i = 0; i < colorList.size(); i++)
-    //     {
-    //         switch (colorList.get(i)) {
-    //             case green:
-    //                 colorArray[i] = "G";
-    //                 break;
-    //             case blue:
-    //                 colorArray[i] = "B";
-    //                 break;
-    //             case red:
-    //                 colorArray[i] = "R";
-    //                 break;
-    //             default:
-    //                 break;
-    //         }
-    //     }
-    //     return colorArray;
-    // }
 
     public int getEdgeCount() {
         return edgeCount;

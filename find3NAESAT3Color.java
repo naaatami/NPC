@@ -12,6 +12,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Collections;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class find3NAESAT3Color {
     public static void main(String[] args) {
@@ -38,26 +39,64 @@ public class find3NAESAT3Color {
                 int nCount = nk[0];
                 int kCount = nk[1];
                 Graph graph = makeNewGraph(cnfArray, nCount, kCount);
-                boolean coloringFound = graph.greedyColoring(0);
+                boolean coloringFound = graph.threeColorSolve(0);
                 long elapsedTime = System.currentTimeMillis() - startTime;
-
-
-                boolean[] variableValues = new boolean[nCount];
+                String[] cnfAssignments = new String[nCount];
 
                 //output
                 // System.out.println("\n" + graph.toString());
                 System.out.println("\n3CNF No." + cnfCount + ":[n=" + nCount + " k=" + kCount + "]");
-                System.out.print("(" + elapsedTime + " ms)");
+                System.out.print("(" + elapsedTime + " ms) ");
                 if(coloringFound)
                 {
-                    System.out.println("NAE certificate = [MORE STUFF HERE]");
+                    System.out.print("NAE certificate = ");
                 } else {
-                    System.out.println("No NAE positive certificate! Using an random assignment = [MORE STUFF HERE]");
+                    System.out.print("No NAE positive certificate! Using an random assignment = ");
                 }
 
-                // printing assignment
-                System.out.println(Helper.format3CNF(cnfArray) + "==>");
-                System.out.println("Useless color: " + uselessColor);
+                // translating the solve into T or F values
+                ArrayList<Color> colorList = graph.getColorList();
+                if(coloringFound) {
+                    Color uselessColor = colorList.get(0);
+                    Color trueColor = colorList.get(1);
+                    for(int i = 0; i < cnfAssignments.length; i++)
+                    {
+                        if(colorList.get(i * 2 + 1) == trueColor)
+                            cnfAssignments[i] = "T";
+                        else
+                            cnfAssignments[i] = "F";
+                    }
+                } else {
+                    Random random = new Random();
+                    for(int i = 0; i < cnfAssignments.length; i++) {
+                        if(random.nextBoolean())
+                            cnfAssignments[i] = "T";
+                        else
+                            cnfAssignments[i] = "F";
+                    }
+                }
+
+                // printing NAE certificate
+                System.out.print("[");
+                for(int i = 0; i < cnfAssignments.length; i++) {
+                    System.out.print((i+1) + ":" + cnfAssignments[i] + " ");
+                }
+                System.out.print("]\n");
+
+
+                // printing assignments
+                // bennett please help
+                System.out.println(Helper.format3CNF(cnfArray) + " ==>");
+                // System.out.print("(");
+                // for(int i = 0; i < cnfArray.length; i++)
+                // {
+                //     if(cnfAssignments[Math.abs(cnfArray[i])] == "T")
+                //         System.out.println(" T");
+                //     else
+                //         System.out.print(" F");
+                // }
+                // System.out.print(")");
+
 
                 cnfCount++;
                 line = reader.readLine();

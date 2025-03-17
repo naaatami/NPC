@@ -35,23 +35,30 @@ public class find3Color {
                 }
             }
         } catch (FileNotFoundException e) {
-            System.out.println("File Not Found");
+            System.out.println("ERROR: File not found");
             e.printStackTrace();
         }
 
         // EDGE COUNT IS NOT ACTUALLY RIGHT AS A HEADS UP
         int graphCount = 1;
-        for(Graph g : graphs) {
-            System.out.println("G" + graphCount + ":(|V|=" + g.getVertexCount() + ", |E|=" + g.getEdgeCount() + ")");
-            if(g.getVertexCount() <= 20)
-                System.out.println(g.toString());
-            g.greedyColoring(0);
-            System.out.println(g.getColorList() + "\n");
+        for(Graph currentGraph : graphs) {
+            long startTime = System.currentTimeMillis();
+            System.out.print("\nG" + graphCount + ":(|V|=" + currentGraph.getVertexCount() + ",|E|=" + currentGraph.getEdgeCount() + ")");
+            boolean currentGraphSolved = currentGraph.threeColorSolve(0);
+            long elapsedTime = System.currentTimeMillis() - startTime;
+
+            System.out.print(" " + currentGraph.getColorString());
+            System.out.print("(ms=" + elapsedTime + ")\n");
+
+            if(currentGraphSolved && currentGraph.getVertexCount() <= 20)
+            {
+                System.out.println(currentGraph.toString());
+            }
+
             graphCount++;
         }
 
-
-
     }
+
     
 }
