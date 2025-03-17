@@ -44,7 +44,7 @@ class Graph {
 
     boolean isSafe(int k, colors c) {
         for (int i=0;i<vertices;i++) {
-            if(getEdge(k, i) == 1 && c==colorList.get(i)) {
+            if(k != i && getEdge(k, i) == 1 && c==colorList.get(i)) {
                 return false;
             }
         }
