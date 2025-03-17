@@ -1,3 +1,5 @@
+// Solves a 3NAESAT problem by reducing it to the 3 color problem.
+// The file to be solved must be passed as an argument.
 // javac find3NAESAT3Color.java
 // java find3NAESAT3Color cnfs2025.txt
 // Natalie Simova, Bennett Beltran, Shane Burke
@@ -19,17 +21,20 @@ public class find3NAESAT3Color {
         System.out.println("** Find find3NAESAT3Color in " + cnfFile);
         int cnfCount = 1;
         
-        // read input
         try {
             BufferedReader reader = new BufferedReader(new FileReader(cnfFile));
             String line = reader.readLine();
          
             while (line != null) {
-                int[] cnfArray = splitInput(line);
-                int[] nk = findNandK(cnfArray);
-                System.out.println("3CNF No. " + cnfCount + ": [n=" + nk[0] + " k=" + nk[1] + "]");
+                int[] cnfArray = Helper.splitCNFInput(line);
+                int[] nk = Helper.findNandK(cnfArray);
+                int nCount = nk[0];
+                int kCount = nk[1];
+
+                System.out.println("3CNF No. " + cnfCount + ": [n=" + nCount + " k=" + kCount + "]");
                 System.out.println(line);
-                int[][] adjacencyMatrix = makeGraph(cnfArray, nk[0], nk[1]);
+                System.out.println(Helper.format3CNF(cnfArray));
+                int[][] adjacencyMatrix = makeGraph(cnfArray, nCount, kCount);
                 System.out.println("\n");
                 cnfCount++;
 
@@ -41,36 +46,6 @@ public class find3NAESAT3Color {
         }
     }
 
-    // splits the 3CNF clause into a string array so it can be more easily processed
-    public static int[] splitInput(String inputString)
-    {
-        String[] numberStringArray = inputString.trim().split("\\s+"); // separating by spaces
-
-        int[] numbers = new int[numberStringArray.length];
-        for (int i = 0; i < numberStringArray.length; i++) {
-            numbers[i] = Integer.parseInt(numberStringArray[i]); // Convert to int
-        }
-
-        return numbers;
-    }
-
-    // given a CNF clause, finds n and k and sends it back in an array.
-    // index 0 is n, index 1 is k
-    public static int[] findNandK(int[] cnfArray)
-    {
-        int[] nk = {0, 0};
-        for(int currentNum : cnfArray)
-        {
-            int value = Math.abs(currentNum);
-            if(value > nk[0])
-            {
-                nk[0] = value;
-            }
-            nk[1]++;
-        }
-        nk[1] = nk[1] / 3;
-        return nk;
-    }
 
     // makes a graph given a 3CNF clause
     public static int[][] makeGraph(int[] cnfArray, int n, int k)
@@ -128,8 +103,6 @@ public class find3NAESAT3Color {
                 }
             }
         }
-
-        // consider adding a loop to just mirror, since this is symmetric. this should save you from the extra lines you did above
 
         printAdjacencyMatrix(adjacencyMatrix);
         return adjacencyMatrix;
