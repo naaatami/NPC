@@ -55,11 +55,11 @@ public class find3NAESAT3Color {
                 }
 
                 // translating the solve into T or F values
+                // TODO: break this out into a separate method
                 ArrayList<Color> colorList = graph.getColorList();
                 if(coloringFound) {
                     Color uselessColor = colorList.get(0);
                     Color trueColor = colorList.get(1);
-                    for(int i = 0; i < cnfAssignments.length; i++)
                     {
                         if(colorList.get(i * 2 + 1) == trueColor)
                             cnfAssignments[i] = "T";
@@ -77,6 +77,7 @@ public class find3NAESAT3Color {
                 }
 
                 // printing NAE certificate
+                // TODO: this has an extra space i've not gotten rid of
                 System.out.print("[");
                 for(int i = 0; i < cnfAssignments.length; i++) {
                     System.out.print((i+1) + ":" + cnfAssignments[i] + " ");
@@ -85,7 +86,7 @@ public class find3NAESAT3Color {
 
 
                 // printing assignments
-                // bennett please help
+                // TODO: bennett please help
                 System.out.println(Helper.format3CNF(cnfArray) + " ==>");
                 // System.out.print("(");
                 // for(int i = 0; i < cnfArray.length; i++)

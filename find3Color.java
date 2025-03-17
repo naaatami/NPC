@@ -1,8 +1,10 @@
+// Solves a 3 color problem when given a file representing graph(s).
+// The file to be solved must be passed as an argument.
+// Natalie Simova, Bennett Beltran, Shane Burke
 
 import java.io.*;
 import java.util.*;
 import java.util.ArrayList;
-
 
 public class find3Color {
     public static void main(String[] args) {
@@ -40,6 +42,8 @@ public class find3Color {
         }
 
         // EDGE COUNT IS NOT ACTUALLY RIGHT AS A HEADS UP
+        // TODO: fix the output
+        // TODO: fix the edge count
         int graphCount = 1;
         for(Graph currentGraph : graphs) {
             long startTime = System.currentTimeMillis();

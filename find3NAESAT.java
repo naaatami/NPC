@@ -37,7 +37,7 @@ public class find3NAESAT {
                 int numTerms = numTermsNumClauses[0];
                 int numClauses = numTermsNumClauses[1];
 
-                System.out.println("3CNF No." + cnfCount + ": [n=" + numTerms + " k=" + numClauses + "]");
+                System.out.println("3CNF No." + cnfCount + ":[n=" + numTerms + " k=" + numClauses + "]");
 
                 Hashtable<Integer, Boolean> baseAssignments = new Hashtable<>();
                 long startTime = System.currentTimeMillis();

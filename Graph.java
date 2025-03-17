@@ -1,3 +1,6 @@
+// A graph class represented using an adjacency list for find3Color.
+// Natalie Simova, Bennett Beltran, Shane Burke
+// TODO: sweep through here and find if anything can be simplified
 
 import java.util.ArrayList;
 
