@@ -2,17 +2,17 @@
 import java.util.ArrayList;
 
 class Graph {
-    private enum colors {green,blue,red,none}
+    private enum colors {green,blue,red}
     private int vertices;
     private ArrayList<ArrayList<Integer>> adj;
-    private ArrayList<colors> colorList;
+    private ArrayList<colors> colorList = new ArrayList<colors>();
 
     Graph(int v) {
         vertices = v;
         adj = new ArrayList<ArrayList<Integer>>(vertices);
         for (int i=0;i<v; i++) {
             adj.add(new ArrayList<Integer>(vertices));
-            colorList.add(colors.none);
+            colorList.add(null);
             for (int j=0;j<v;j++) {
                 adj.get(i).add(0);
             }
@@ -28,26 +28,40 @@ class Graph {
         return adj.get(v).get(w);
     }
 
+
+    public ArrayList<colors> getColorList() {
+        return colorList;
+    }
+
     void addColor(int v, colors color) {
         colorList.set(v, color);
     }
 
-    void greedyColoring() {
-        
-        int vertex = 0;
-        addColor(vertex, colors.red);
-        
+
+    boolean isSafe(int k, colors c) {
         for (int i=0;i<vertices;i++) {
-            if (this.getEdge(vertex, i) == 1) {
-                vertex = i;
-                i = vertices; //break
+            if(getEdge(k, i) == 1 && c==colorList.get(i)) {
+                return false;
             }
         }
+        return true;
+    }
 
-
-
+    public boolean greedyColoring(int v) {
         
-        return;
+        for (colors c:colors.values()) {
+            if (isSafe(v,c)) {
+                colorList.set(v, c);
+                if (v+1<vertices) {
+                    greedyColoring(v+1);
+                }
+                else {
+                    return true;
+                }  
+            }
+        }
+        
+        return false;
     }
 
     public String toString() {

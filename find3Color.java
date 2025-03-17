@@ -31,16 +31,17 @@ public class find3Color {
 
                     System.out.println(graphs.get(graphs.size()-1));
                 }
+
             }
         } catch (FileNotFoundException e) {
             System.out.println("File Not Found");
             e.printStackTrace();
         }
-            
 
+        for(Graph g:graphs) {
+            g.greedyColoring(0);
+        }
 
-        System.out.println(graphs.getFirst());
-        
     }
-
+    
 }
