@@ -35,6 +35,8 @@ public class find3NAESAT3Color {
                 System.out.println(line);
                 System.out.println(Helper.format3CNF(cnfArray));
                 int[][] adjacencyMatrix = makeGraph(cnfArray, nCount, kCount);
+                Graph graph = makeNewGraph(cnfArray, nCount, kCount);
+                System.out.println("\n" + graph.toString());
                 System.out.println("\n");
                 cnfCount++;
 
@@ -106,6 +108,65 @@ public class find3NAESAT3Color {
 
         printAdjacencyMatrix(adjacencyMatrix);
         return adjacencyMatrix;
+    }
+
+    public static Graph makeNewGraph(int[] cnfArray, int n, int k)
+    {
+        // total vertex count = x + bars + triangles
+        int vertexCount = 1 + 2*n + 3*k;
+        Graph graph = new Graph(vertexCount);
+
+        // vertex 0 will be x
+        // vertices 1 through 2*n+1 will be a, not a, etc.
+        // 2*n+1 through the end are clause triangles
+
+        // setting x as adjacent to all top vertices (a, not a, etc.)
+        // nVerticeMax represents the range of vertices that form bars
+        int nVerticeMax = 2 * n + 1;
+        for(int i = 1; i < nVerticeMax; i++)
+        {
+            graph.addEdge(0, i);
+            // graph.addEdge(i, 0);
+        }
+
+        // setting bars as adjacent to each other
+        for(int i = 1; i < nVerticeMax; i+=2) {
+            graph.addEdge(i, i+1);
+            // graph.addEdge(i+1, i);
+        }
+
+        // setting all triangles of clauses adjacent to each other
+        for(int i = nVerticeMax; i < vertexCount; i+=3)
+        {
+            graph.addEdge(i,i+1);
+            // graph.addEdge(i+1, i);
+            graph.addEdge(i, i+2);
+            // graph.addEdge(i+2, i);
+            graph.addEdge(i+1, i+2);
+            // graph.addEdge(i+2, i+1);
+        }
+
+        // setting all equal values across bars and triangles adjacent to each other
+        // (and making a new array first that represents the values of vertices 1 - nVerticeMax
+        int[] nVertexValue = new int[n * 2];
+        for (int i = 0; i < nVertexValue.length/2; i++) {
+            nVertexValue[i * 2] = i + 1;
+            nVertexValue[i * 2 + 1] = -(i + 1);
+        }
+
+        for(int i = 0; i < cnfArray.length; i++)
+        {
+            for(int j = 0; j < nVertexValue.length; j++)
+            {
+                if(cnfArray[i] == nVertexValue[j])
+                {
+                    graph.addEdge(nVerticeMax+i, j+1);
+                    // graph.addEdge(j+1, nVerticeMax+i);
+                }
+            }
+        }
+
+        return graph;
     }
 
     public static void printAdjacencyMatrix(int[][] matrix)

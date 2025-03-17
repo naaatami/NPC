@@ -3,12 +3,13 @@ import java.util.ArrayList;
 
 class Graph {
     private enum colors {green,blue,red}
-    private int vertices;
+    private int vertices, edgeCount;
     private ArrayList<ArrayList<Integer>> adj;
     private ArrayList<colors> colorList = new ArrayList<colors>();
 
     Graph(int v) {
         vertices = v;
+        edgeCount = 0;
         adj = new ArrayList<ArrayList<Integer>>(vertices);
         for (int i=0;i<v; i++) {
             adj.add(new ArrayList<Integer>(vertices));
@@ -22,6 +23,7 @@ class Graph {
     void addEdge(int v, int w) {
         adj.get(v).set(w,1);
         adj.get(w).set(v,1);
+        edgeCount++;
     }
 
     int getEdge(int v, int w) {
@@ -29,9 +31,9 @@ class Graph {
     }
 
 
-    public ArrayList<colors> getColorList() {
-        return colorList;
-    }
+    // public ArrayList<colors> getColorList() {
+    //     return colorList;
+    // }
 
     void addColor(int v, colors color) {
         colorList.set(v, color);
@@ -75,5 +77,42 @@ class Graph {
         }
         
         return graph.toString();
+    }
+
+    // this crashes if there's no colorList :3 whoopsie, will fix later
+    public String getColorList()
+    {
+        if(colorList == null)
+        {
+            return null;
+        }
+
+        String colorString = "";
+        for(colors color : colorList)
+        {
+            switch (color) {
+                case green:
+                    colorString = colorString + "G";
+                    break;
+                case blue:
+                    colorString = colorString + "B";
+                    break;
+                case red:
+                    colorString = colorString + "R";
+                    break;
+                default:
+                    break;
+            }
+            colorString = colorString + " ";
+        }
+        return colorString;
+    }
+
+    public int getEdgeCount() {
+        return edgeCount;
+    }
+
+    public int getVertexCount() {
+        return vertices;
     }
 }
