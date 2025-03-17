@@ -82,7 +82,6 @@ class Graph {
         return graph.toString();
     }
 
-    // this crashes if there's no colorList :3 whoopsie, will fix later
     public String getColorList()
     {
         if(coloringFound == false)
@@ -110,6 +109,28 @@ class Graph {
         }
         return colorString;
     }
+
+    // public String[] getColorArray()
+    // {
+    //     String[] colorArray = new String[vertices];
+    //     for(int i = 0; i < colorList.size(); i++)
+    //     {
+    //         switch (colorList.get(i)) {
+    //             case green:
+    //                 colorArray[i] = "G";
+    //                 break;
+    //             case blue:
+    //                 colorArray[i] = "B";
+    //                 break;
+    //             case red:
+    //                 colorArray[i] = "R";
+    //                 break;
+    //             default:
+    //                 break;
+    //         }
+    //     }
+    //     return colorArray;
+    // }
 
     public int getEdgeCount() {
         return edgeCount;

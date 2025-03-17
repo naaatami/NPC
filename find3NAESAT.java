@@ -80,7 +80,7 @@ public class find3NAESAT {
 
     }
 
-    public static String generateAssignments(int[] cnfArray, Hashtable<Integer, Boolean> assignments) {
+     public static String generateAssignments(int[] cnfArray, Hashtable<Integer, Boolean> assignments) {
         ArrayList<String> results = new ArrayList<String>();
 
         for (int i = 0; i < cnfArray.length; i += 3) {
@@ -185,6 +185,8 @@ public class find3NAESAT {
         }
         return true;
     }
+
+
 
     public static boolean find3NAESATCertificate(int[] cnfArray, Hashtable<Integer, Boolean> assignments, int curTerm,
             int numTerms) {

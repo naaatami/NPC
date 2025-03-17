@@ -1,6 +1,7 @@
 // Helper methods for NPC problems
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 
 public class Helper
 {
