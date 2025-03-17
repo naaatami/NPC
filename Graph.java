@@ -5,12 +5,14 @@ class Graph {
     private enum colors {green,blue,red}
     private int vertices, edgeCount;
     private ArrayList<ArrayList<Integer>> adj;
+    private boolean coloringFound;
     private ArrayList<colors> colorList = new ArrayList<colors>();
 
     Graph(int v) {
         vertices = v;
         edgeCount = 0;
         adj = new ArrayList<ArrayList<Integer>>(vertices);
+        coloringFound = false;
         for (int i=0;i<v; i++) {
             adj.add(new ArrayList<Integer>(vertices));
             colorList.add(null);
@@ -58,6 +60,7 @@ class Graph {
                     greedyColoring(v+1);
                 }
                 else {
+                    coloringFound = true;
                     return true;
                 }  
             }
@@ -82,9 +85,9 @@ class Graph {
     // this crashes if there's no colorList :3 whoopsie, will fix later
     public String getColorList()
     {
-        if(colorList == null)
+        if(coloringFound == false)
         {
-            return null;
+            return "No coloring found!";
         }
 
         String colorString = "";
