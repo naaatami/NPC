@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 class Graph {
 
+    private enum Color {R,G,B}
     private int vertices, edgeCount;
     private ArrayList<ArrayList<Integer>> adjacencyList;
     private boolean coloringFound;
@@ -46,7 +47,7 @@ class Graph {
 
 
     boolean isSafe(int k, Color color) {
-        for (int i = 0; i < vertices; i++) {
+        for (int i = 0; i < k; i++) {
             if(k != i && getEdge(k, i) == 1 && color == colorList.get(i)) {
                 return false;
             }
@@ -80,29 +81,35 @@ class Graph {
     }
 
     public String toString() {
-        StringBuilder stringGraph = new StringBuilder();
-        stringGraph.append("  ");
-        for(Color color : colorList)
-        {
-            stringGraph.append(color + " ");
-        }
-        stringGraph.append("\n");
-
-        for (int i = 0;i<vertices;i++) {
-            stringGraph.append(colorList.get(i) + " ");
-            for (int j = 0;j<vertices;j++) {
-                if(i == j)
-                    stringGraph.append("X ");
-                else if(adjacencyList.get(i).get(j) == 1)
-                    stringGraph.append("1 ");
-                else
-                    stringGraph.append("  ");
+            if (vertices<20) {
+            StringBuilder stringGraph = new StringBuilder();
+            stringGraph.append("  ");
+            for(Color color : colorList)
+            {
+                stringGraph.append(color + " ");
             }
-
             stringGraph.append("\n");
+
+            for (int i = 0;i<vertices;i++) {
+                stringGraph.append(colorList.get(i) + " ");
+                for (int j = 0;j<vertices;j++) {
+                    if(i == j)
+                        stringGraph.append("X ");
+                    else if(adjacencyList.get(i).get(j) == 1)
+                        stringGraph.append("1 ");
+                    else
+                        stringGraph.append("  ");
+                }
+
+                stringGraph.append("\n");
+            }
+            
+            return stringGraph.toString();
+
         }
-        
-        return stringGraph.toString();
+        else {
+            return getColorString();
+        }
     }
 
     public String getColorString()
