@@ -16,20 +16,19 @@ import java.util.Random;
 
 public class find3NAESAT3Color {
     public static void main(String[] args) {
-        if (args.length == 0)
-        {
+        if (args.length == 0) {
             System.out.println("ERROR: Please provide the text file you'd like to use.");
             return;
         }
 
-        String cnfFile = args[0]; 
-        System.out.println("** Find find3NAESAT3Color in " + cnfFile + " (reduced to 3-Color Problem):");
+        String cnfFile = args[0];
+        System.out.println("** Find find3NAESAT in " + cnfFile + " (reduced to 3-Color Problem):");
         int cnfCount = 1;
-        
+
         try {
             BufferedReader reader = new BufferedReader(new FileReader(cnfFile));
             String line = reader.readLine();
-         
+
             while (line != null) {
                 // System.out.println(line);
 
@@ -41,14 +40,19 @@ public class find3NAESAT3Color {
                 Graph graph = makeNewGraph(cnfArray, nCount, kCount);
                 boolean coloringFound = graph.threeColorSolve(0);
                 long elapsedTime = System.currentTimeMillis() - startTime;
-                boolean[] varAssignments = new boolean[nCount];
 
-                //output
+                int eCount = graph.getEdgeCount();
+                int vCount = graph.getVertexCount();
+
+                // output
                 // System.out.println("\n" + graph.toString());
-                System.out.println("\n3CNF No." + cnfCount + ":[n=" + nCount + " k=" + kCount + "]");
+
+                System.out.print("\n3CNF No." + cnfCount + ":[n=" + nCount + " k=" + kCount);
+                System.out.println("]->[V=" + vCount + ", E=" + eCount + "]");
+
                 System.out.print("(" + elapsedTime + " ms) ");
-                if(coloringFound)
-                {
+
+                if (coloringFound) {
                     System.out.print("NAE certificate = ");
                 } else {
                     System.out.print("No NAE positive certificate! Using an random assignment = ");
@@ -57,48 +61,32 @@ public class find3NAESAT3Color {
                 // translating the solve into T or F values
                 // TODO: break this out into a separate method
                 ArrayList<Color> colorList = graph.getColorList();
-                if(coloringFound) {
-                    Color uselessColor = colorList.get(0);
-                    Color trueColor = colorList.get(1);
-                    for(int i = 0; i < varAssignments.length; i++) {
-                        if(colorList.get(i * 2 + 1) == trueColor)
-                            varAssignments[i] = true;
-                        else
-                            varAssignments[i] = false;
-                    }
-                } else {
-                    Random random = new Random();
-                    for(int i = 0; i < varAssignments.length; i++) {
-                        if(random.nextBoolean())
-                            varAssignments[i] = true;
-                        else
-                            varAssignments[i] = false;
-                    }
-                }
+
+                boolean[] varAssignments = setAssignments(colorList, coloringFound, nCount);
 
                 // printing NAE certificate
                 System.out.print("[");
-                for(int i = 0; i < varAssignments.length; i++) {
+                for (int i = 0; i < varAssignments.length; i++) {
                     String boolValue = varAssignments[i] == true ? "T" : "F";
-                    System.out.print((i+1) + ":" + boolValue);
+                    System.out.print((i + 1) + ":" + boolValue);
                     if (i < varAssignments.length - 1) {
                         System.out.print(" ");
                     }
                 }
                 System.out.println("]");
 
-
                 // printing assignments
                 // TODO: bennett please help
+                // It looks good though :0
                 System.out.println(Helper.format3CNF(cnfArray) + " ==>");
 
                 ArrayList<String> results = new ArrayList<String>();
                 for (int i = 0; i < cnfArray.length; i += 3) {
                     String group = "(";
                     // Determine what assignment we are looking at, and find its boolean value
-                    boolean value1 = varAssignments[Math.abs(cnfArray[i])-1];
-                    boolean value2 = varAssignments[Math.abs(cnfArray[i+1])-1];
-                    boolean value3 = varAssignments[Math.abs(cnfArray[i+2])-1];
+                    boolean value1 = varAssignments[Math.abs(cnfArray[i]) - 1];
+                    boolean value2 = varAssignments[Math.abs(cnfArray[i + 1]) - 1];
+                    boolean value3 = varAssignments[Math.abs(cnfArray[i + 2]) - 1];
 
                     // If the term is negative, flip the boolean value
                     if (cnfArray[i] < 0) {
@@ -129,10 +117,34 @@ public class find3NAESAT3Color {
         }
     }
 
-    public static Graph makeNewGraph(int[] cnfArray, int n, int k)
-    {
+    public static boolean[] setAssignments(ArrayList<Color> colorList, boolean coloringFound, int nCount) {
+        boolean[] varAssignments = new boolean[nCount];
+
+        if (coloringFound) {
+            Color uselessColor = colorList.get(0);
+            Color trueColor = colorList.get(1);
+            for (int i = 0; i < varAssignments.length; i++) {
+                if (colorList.get(i * 2 + 1) == trueColor)
+                    varAssignments[i] = true;
+                else
+                    varAssignments[i] = false;
+            }
+        } else {
+            Random random = new Random();
+            for (int i = 0; i < varAssignments.length; i++) {
+                if (random.nextBoolean())
+                    varAssignments[i] = true;
+                else
+                    varAssignments[i] = false;
+            }
+        }
+
+        return varAssignments;
+    }
+
+    public static Graph makeNewGraph(int[] cnfArray, int n, int k) {
         // total vertex count = x + bars + triangles
-        int vertexCount = 1 + 2*n + 3*k;
+        int vertexCount = 1 + 2 * n + 3 * k;
         Graph graph = new Graph(vertexCount);
 
         // vertex 0 will be x
@@ -142,39 +154,35 @@ public class find3NAESAT3Color {
         // setting x as adjacent to all top vertices (a, not a, etc.)
         // nVerticeMax represents the range of vertices that form bars
         int nVerticeMax = 2 * n + 1;
-        for(int i = 1; i < nVerticeMax; i++)
-        {
+        for (int i = 1; i < nVerticeMax; i++) {
             graph.addEdge(0, i);
         }
 
         // setting bars as adjacent to each other
-        for(int i = 1; i < nVerticeMax; i+=2) {
-            graph.addEdge(i, i+1);
+        for (int i = 1; i < nVerticeMax; i += 2) {
+            graph.addEdge(i, i + 1);
         }
 
         // setting all triangles of clauses adjacent to each other
-        for(int i = nVerticeMax; i < vertexCount; i+=3)
-        {
-            graph.addEdge(i,i+1);
-            graph.addEdge(i, i+2);
-            graph.addEdge(i+1, i+2);
+        for (int i = nVerticeMax; i < vertexCount; i += 3) {
+            graph.addEdge(i, i + 1);
+            graph.addEdge(i, i + 2);
+            graph.addEdge(i + 1, i + 2);
         }
 
         // setting all equal values across bars and triangles adjacent to each other
-        // (and making a new array first that represents the values of vertices 1 - nVerticeMax
+        // (and making a new array first that represents the values of vertices 1 -
+        // nVerticeMax
         int[] nVertexValue = new int[n * 2];
-        for (int i = 0; i < nVertexValue.length/2; i++) {
+        for (int i = 0; i < nVertexValue.length / 2; i++) {
             nVertexValue[i * 2] = i + 1;
             nVertexValue[i * 2 + 1] = -(i + 1);
         }
 
-        for(int i = 0; i < cnfArray.length; i++)
-        {
-            for(int j = 0; j < nVertexValue.length; j++)
-            {
-                if(cnfArray[i] == nVertexValue[j])
-                {
-                    graph.addEdge(nVerticeMax+i, j+1);
+        for (int i = 0; i < cnfArray.length; i++) {
+            for (int j = 0; j < nVertexValue.length; j++) {
+                if (cnfArray[i] == nVertexValue[j]) {
+                    graph.addEdge(nVerticeMax + i, j + 1);
                 }
             }
         }

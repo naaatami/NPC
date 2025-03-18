@@ -8,8 +8,7 @@ import java.util.ArrayList;
 
 public class find3Color {
     public static void main(String[] args) {
-        if (args.length == 0)
-        {
+        if (args.length == 0) {
             System.out.println("ERROR: Please provide the text file you'd like to use.");
             return;
         }
@@ -26,10 +25,10 @@ public class find3Color {
                 if (vertices != 0) {
                     graphs.add(new Graph(vertices));
                     scan.nextLine();
-                    for (int i = 0;i<vertices;i++) {
-                        for (int j = 0; j<vertices;j++) {
+                    for (int i = 0; i < vertices; i++) {
+                        for (int j = 0; j < vertices; j++) {
                             if (scan.nextInt() == 1) {
-                                graphs.get(graphs.size()-1).addEdge(i,j);
+                                graphs.get(graphs.size() - 1).addEdge(i, j);
                             }
                         }
                         scan.nextLine();
@@ -45,17 +44,23 @@ public class find3Color {
         // TODO: fix the output
         // TODO: fix the edge count
         int graphCount = 1;
-        for(Graph currentGraph : graphs) {
+        for (Graph currentGraph : graphs) {
             long startTime = System.currentTimeMillis();
-            System.out.print("\nG" + graphCount + ":(|V|=" + currentGraph.getVertexCount() + ",|E|=" + currentGraph.getEdgeCount() + ")");
+            int vCount = currentGraph.getVertexCount();
+            // Why is the edge count weird here but fine in the other problem? Dont ask
+            int eCount = (currentGraph.getEdgeCount() - vCount) / 2;
+
+            System.out.print("\nG" + graphCount + ":(|V|=" + vCount + ",|E|=" + eCount + ")");
             boolean currentGraphSolved = currentGraph.threeColorSolve(0);
             long elapsedTime = System.currentTimeMillis() - startTime;
 
-            System.out.print(" " + currentGraph.getColorString());
-            System.out.print("(ms=" + elapsedTime + ")\n");
+            // Not sure if we need below line or not
+            // System.out.print(" " + currentGraph.getColorString());
+            System.out.print(" (ms=" + elapsedTime + ")\n");
 
-            if(currentGraphSolved && currentGraph.getVertexCount() <= 20)
-            {
+            // Add this condition back to the if statement if you want..
+            // && currentGraph.getVertexCount() <= 20
+            if (currentGraphSolved) {
                 System.out.println(currentGraph.toString());
             }
 
@@ -64,5 +69,4 @@ public class find3Color {
 
     }
 
-    
 }
