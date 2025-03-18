@@ -41,7 +41,7 @@ public class find3NAESAT3Color {
                 Graph graph = makeNewGraph(cnfArray, nCount, kCount);
                 boolean coloringFound = graph.threeColorSolve(0);
                 long elapsedTime = System.currentTimeMillis() - startTime;
-                String[] cnfAssignments = new String[nCount];
+                boolean[] varAssignments = new boolean[nCount];
 
                 //output
                 // System.out.println("\n" + graph.toString());
@@ -60,44 +60,65 @@ public class find3NAESAT3Color {
                 if(coloringFound) {
                     Color uselessColor = colorList.get(0);
                     Color trueColor = colorList.get(1);
-                    {
+                    for(int i = 0; i < varAssignments.length; i++) {
                         if(colorList.get(i * 2 + 1) == trueColor)
-                            cnfAssignments[i] = "T";
+                            varAssignments[i] = true;
                         else
-                            cnfAssignments[i] = "F";
+                            varAssignments[i] = false;
                     }
                 } else {
                     Random random = new Random();
-                    for(int i = 0; i < cnfAssignments.length; i++) {
+                    for(int i = 0; i < varAssignments.length; i++) {
                         if(random.nextBoolean())
-                            cnfAssignments[i] = "T";
+                            varAssignments[i] = true;
                         else
-                            cnfAssignments[i] = "F";
+                            varAssignments[i] = false;
                     }
                 }
 
                 // printing NAE certificate
-                // TODO: this has an extra space i've not gotten rid of
                 System.out.print("[");
-                for(int i = 0; i < cnfAssignments.length; i++) {
-                    System.out.print((i+1) + ":" + cnfAssignments[i] + " ");
+                for(int i = 0; i < varAssignments.length; i++) {
+                    String boolValue = varAssignments[i] == true ? "T" : "F";
+                    System.out.print((i+1) + ":" + boolValue);
+                    if (i < varAssignments.length - 1) {
+                        System.out.print(" ");
+                    }
                 }
-                System.out.print("]\n");
+                System.out.println("]");
 
 
                 // printing assignments
                 // TODO: bennett please help
                 System.out.println(Helper.format3CNF(cnfArray) + " ==>");
-                // System.out.print("(");
-                // for(int i = 0; i < cnfArray.length; i++)
-                // {
-                //     if(cnfAssignments[Math.abs(cnfArray[i])] == "T")
-                //         System.out.println(" T");
-                //     else
-                //         System.out.print(" F");
-                // }
-                // System.out.print(")");
 
+                ArrayList<String> results = new ArrayList<String>();
+                for (int i = 0; i < cnfArray.length; i += 3) {
+                    String group = "(";
+                    // Determine what assignment we are looking at, and find its boolean value
+                    boolean value1 = varAssignments[Math.abs(cnfArray[i])-1];
+                    boolean value2 = varAssignments[Math.abs(cnfArray[i+1])-1];
+                    boolean value3 = varAssignments[Math.abs(cnfArray[i+2])-1];
+
+                    // If the term is negative, flip the boolean value
+                    if (cnfArray[i] < 0) {
+                        value1 = !value1;
+                    }
+                    if (cnfArray[i + 1] < 0) {
+                        value2 = !value2;
+                    }
+                    if (cnfArray[i + 2] < 0) {
+                        value3 = !value3;
+                    }
+                    String a1 = value1 ? "T" : "F";
+                    String a2 = value2 ? "T" : "F";
+                    String a3 = value3 ? "T" : "F";
+
+                    group += " " + a1 + "| " + a2 + "| " + a3;
+                    group += ")";
+                    results.add(group);
+                }
+                System.out.println(String.join("/\\", results));
 
                 cnfCount++;
                 line = reader.readLine();
