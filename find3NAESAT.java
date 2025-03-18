@@ -20,9 +20,8 @@ public class find3NAESAT {
             return;
         }
 
-        String cnfFile = args[0];
-
         // Start output
+        String cnfFile = args[0];
         System.out.println("** Find 3NAESAT in " + cnfFile + " (by backtracking):");
         System.out.println();
 

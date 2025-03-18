@@ -22,16 +22,15 @@ public class find3NAESAT3Color {
         }
 
         String cnfFile = args[0];
-        System.out.println("** Find find3NAESAT in " + cnfFile + " (reduced to 3-Color Problem):");
+        System.out.println("** Find 3NAESAT in " + cnfFile + " (reduced to 3-Color Problem):");
         int cnfCount = 1;
 
+        // reading line by line
         try {
             BufferedReader reader = new BufferedReader(new FileReader(cnfFile));
             String line = reader.readLine();
 
             while (line != null) {
-                // System.out.println(line);
-
                 long startTime = System.currentTimeMillis();
                 int[] cnfArray = Helper.splitCNFInput(line);
                 int[] nk = Helper.findNandK(cnfArray);
@@ -44,12 +43,9 @@ public class find3NAESAT3Color {
                 int eCount = graph.getEdgeCount();
                 int vCount = graph.getVertexCount();
 
-                // output
-                // System.out.println("\n" + graph.toString());
-
+                // output starts here
                 System.out.print("\n3CNF No." + cnfCount + ":[n=" + nCount + " k=" + kCount);
                 System.out.println("]->[V=" + vCount + ", E=" + eCount + "]");
-
                 System.out.print("(" + elapsedTime + " ms) ");
 
                 if (coloringFound) {
@@ -58,10 +54,7 @@ public class find3NAESAT3Color {
                     System.out.print("No NAE positive certificate! Using an random assignment = ");
                 }
 
-                // translating the solve into T or F values
-                // TODO: break this out into a separate method
                 ArrayList<Color> colorList = graph.getColorList();
-
                 boolean[] varAssignments = setAssignments(colorList, coloringFound, nCount);
 
                 // printing NAE certificate
@@ -76,10 +69,7 @@ public class find3NAESAT3Color {
                 System.out.println("]");
 
                 // printing assignments
-                // TODO: bennett please help
-                // It looks good though :0
                 System.out.println(Helper.format3CNF(cnfArray) + " ==>");
-
                 ArrayList<String> results = new ArrayList<String>();
                 for (int i = 0; i < cnfArray.length; i += 3) {
                     String group = "(";
@@ -117,11 +107,12 @@ public class find3NAESAT3Color {
         }
     }
 
+    // pulls out the assignments for variables from a colorList, then
+    // makes an array of assignments per value in each clause from it
     public static boolean[] setAssignments(ArrayList<Color> colorList, boolean coloringFound, int nCount) {
         boolean[] varAssignments = new boolean[nCount];
 
         if (coloringFound) {
-            Color uselessColor = colorList.get(0);
             Color trueColor = colorList.get(1);
             for (int i = 0; i < varAssignments.length; i++) {
                 if (colorList.get(i * 2 + 1) == trueColor)
@@ -142,6 +133,7 @@ public class find3NAESAT3Color {
         return varAssignments;
     }
 
+    // makes a graph that represents the cnfArray
     public static Graph makeNewGraph(int[] cnfArray, int n, int k) {
         // total vertex count = x + bars + triangles
         int vertexCount = 1 + 2 * n + 3 * k;
@@ -171,8 +163,7 @@ public class find3NAESAT3Color {
         }
 
         // setting all equal values across bars and triangles adjacent to each other
-        // (and making a new array first that represents the values of vertices 1 -
-        // nVerticeMax
+        // (and making a new array first that represents the values of vertices 1 - nVerticeMax)
         int[] nVertexValue = new int[n * 2];
         for (int i = 0; i < nVertexValue.length / 2; i++) {
             nVertexValue[i * 2] = i + 1;

@@ -17,6 +17,7 @@ public class find3Color {
         System.out.println("** Find 3-Color plans for graphs in " + inFileString);
         ArrayList<Graph> graphs = new ArrayList<Graph>();
 
+        // reading in graphs
         try {
             File inFile = new File(inFileString);
             Scanner scan = new Scanner(inFile);
@@ -40,26 +41,22 @@ public class find3Color {
             e.printStackTrace();
         }
 
-        // EDGE COUNT IS NOT ACTUALLY RIGHT AS A HEADS UP
-        // TODO: fix the output
-        // TODO: fix the edge count
+        // solve and print graph
         int graphCount = 1;
         for (Graph currentGraph : graphs) {
             long startTime = System.currentTimeMillis();
             int vCount = currentGraph.getVertexCount();
-            // Why is the edge count weird here but fine in the other problem? Dont ask
             int eCount = (currentGraph.getEdgeCount() - vCount) / 2;
 
             System.out.print("\nG" + graphCount + ":(|V|=" + vCount + ",|E|=" + eCount + ")");
             boolean currentGraphSolved = currentGraph.threeColorSolve(0);
             long elapsedTime = System.currentTimeMillis() - startTime;
 
-            // Not sure if we need below line or not
-            // System.out.print(" " + currentGraph.getColorString());
+            if(!currentGraphSolved)
+                System.out.print(" Not 3-colorable");
+
             System.out.print(" (ms=" + elapsedTime + ")\n");
 
-            // Add this condition back to the if statement if you want..
-            // && currentGraph.getVertexCount() <= 20
             if (currentGraphSolved) {
                 System.out.println(currentGraph.toString());
             }
