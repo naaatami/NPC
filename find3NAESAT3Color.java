@@ -57,46 +57,8 @@ public class find3NAESAT3Color {
                 ArrayList<Color> colorList = graph.getColorList();
                 boolean[] varAssignments = setAssignments(colorList, coloringFound, nCount);
 
-                // printing NAE certificate
-                System.out.print("[");
-                for (int i = 0; i < varAssignments.length; i++) {
-                    String boolValue = varAssignments[i] == true ? "T" : "F";
-                    System.out.print((i + 1) + ":" + boolValue);
-                    if (i < varAssignments.length - 1) {
-                        System.out.print(" ");
-                    }
-                }
-                System.out.println("]");
-
-                // printing assignments
-                System.out.println(Helper.format3CNF(cnfArray) + " ==>");
-                ArrayList<String> results = new ArrayList<String>();
-                for (int i = 0; i < cnfArray.length; i += 3) {
-                    String group = "(";
-                    // Determine what assignment we are looking at, and find its boolean value
-                    boolean value1 = varAssignments[Math.abs(cnfArray[i]) - 1];
-                    boolean value2 = varAssignments[Math.abs(cnfArray[i + 1]) - 1];
-                    boolean value3 = varAssignments[Math.abs(cnfArray[i + 2]) - 1];
-
-                    // If the term is negative, flip the boolean value
-                    if (cnfArray[i] < 0) {
-                        value1 = !value1;
-                    }
-                    if (cnfArray[i + 1] < 0) {
-                        value2 = !value2;
-                    }
-                    if (cnfArray[i + 2] < 0) {
-                        value3 = !value3;
-                    }
-                    String a1 = value1 ? "T" : "F";
-                    String a2 = value2 ? "T" : "F";
-                    String a3 = value3 ? "T" : "F";
-
-                    group += " " + a1 + "| " + a2 + "| " + a3;
-                    group += ")";
-                    results.add(group);
-                }
-                System.out.println(String.join("/\\", results));
+                printNAECertificate(varAssignments);
+                printNAEAssignments(cnfArray, varAssignments);
 
                 cnfCount++;
                 line = reader.readLine();
@@ -180,4 +142,51 @@ public class find3NAESAT3Color {
 
         return graph;
     }
+
+    public static void printNAECertificate(boolean[] varAssignments) {
+        System.out.print("[");
+        for (int i = 0; i < varAssignments.length; i++) {
+            String boolValue = varAssignments[i] == true ? "T" : "F";
+            System.out.print((i + 1) + ":" + boolValue);
+            if (i < varAssignments.length - 1) {
+                System.out.print(" ");
+            }
+        }
+        System.out.println("]");
+        return;
+    }
+
+    public static void printNAEAssignments(int[] cnfArray, boolean[] varAssignments)
+    {
+        System.out.println(Helper.format3CNF(cnfArray) + " ==>");
+        ArrayList<String> results = new ArrayList<String>();
+        for (int i = 0; i < cnfArray.length; i += 3) {
+            String group = "(";
+            // Determine what assignment we are looking at, and find its boolean value
+            boolean value1 = varAssignments[Math.abs(cnfArray[i]) - 1];
+            boolean value2 = varAssignments[Math.abs(cnfArray[i + 1]) - 1];
+            boolean value3 = varAssignments[Math.abs(cnfArray[i + 2]) - 1];
+
+            // If the term is negative, flip the boolean value
+            if (cnfArray[i] < 0) {
+                value1 = !value1;
+            }
+            if (cnfArray[i + 1] < 0) {
+                value2 = !value2;
+            }
+            if (cnfArray[i + 2] < 0) {
+                value3 = !value3;
+            }
+            String a1 = value1 ? "T" : "F";
+            String a2 = value2 ? "T" : "F";
+            String a3 = value3 ? "T" : "F";
+
+            group += " " + a1 + "| " + a2 + "| " + a3;
+            group += ")";
+            results.add(group);
+        }
+        System.out.println(String.join("/\\", results));
+        return;
+    }
+
 }
